@@ -12,6 +12,9 @@ Este projeto foi desenvolvido como parte do processo seletivo para a Spotlar. El
 - Testes unitários e de integração.
 - API RESTful.
 
+## Documentação e formas de testar
+Você pode testar a api tanto pela Collection do Postman que está na pasta "postman_collection" ou pelo Swagger na rota http://127.0.0.1:8000/swagger/
+
 ## Instalação e Configuração
 
 1. **Clone o Repositório**

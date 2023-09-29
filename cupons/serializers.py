@@ -19,8 +19,8 @@ class ConsumoSerializer(serializers.ModelSerializer):
     """Serializa informações de um Consumo. 
     Inclui desconto aplicado e data/hora do uso como campos somente leitura."""
     
-    cliente = ClienteSerializer(read_only=True)
-    cupom = CupomSerializer(read_only=True)
+    cliente = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())
+    cupom = serializers.PrimaryKeyRelatedField(queryset=Cupom.objects.all())
 
     class Meta:
         model = Consumo
