@@ -2,56 +2,43 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.utils import timezone
-from datetime import datetime
 from cupons.models import Cliente, Consumo, Cupom
 from decimal import Decimal
 from cupons.serializers import ClienteSerializer, ConsumoSerializer, CupomSerializer
 
 class ClienteViewSet(viewsets.ModelViewSet):
-    """Exibindo todos os clientes"""
+    """API endpoint que permite que os clientes sejam vistos ou editados."""
     queryset = Cliente.objects.all()
     serializer_class = ClienteSerializer
 
 class CuponsViewSet(viewsets.ModelViewSet):
-    """Exibindo todos os cupons"""
+    """API endpoint que permite que os cupons sejam vistos ou editados."""
     queryset = Cupom.objects.all()
     serializer_class = CupomSerializer
 
 class ConsumoViewSet(viewsets.ModelViewSet):
-    """Exibindo todos os consumos"""
+    """API endpoint que permite que os consumos sejam vistos ou editados."""
     queryset = Consumo.objects.all()
     serializer_class = ConsumoSerializer
 
-    def listAll(self, request, *args, **kwargs):
-        """Listando todos os consumos"""
-        consumos = Consumo.objects.all()
-        serializer = ConsumoSerializer(consumos, many=True)
-        return Response(serializer.data)
-
-    def list(self, request, *args, **kwargs):
-        """Listando os consumos"""
-        cliente_id = request.query_params.get("cliente_id", None)
+    def get_queryset(self):
+        """Customize queryset based on request parameters."""
+        queryset = Consumo.objects.all()
+        cliente_id = self.request.query_params.get('cliente_id', None)
         if cliente_id:
-            consumos = Consumo.objects.filter(cliente_id=cliente_id)
-        else:
-            consumos = Consumo.objects.all()
-        serializer = ConsumoSerializer(consumos, many=True)
-        return Response(serializer.data)
-    
-    def listByCupom(self, request, *args, **kwargs):
-        """Listando os consumos"""
-        cupom_code = kwargs.get("cupom")
-        
-        if not cupom_code:
-            return Response({"erro": "Cupom não fornecido."}, status=status.HTTP_400_BAD_REQUEST)
+            queryset = queryset.filter(cliente_id=cliente_id)
+        return queryset
 
+    def listByCupom(self, request, *args, **kwargs):
+        """Listar consumos por cupom."""
+        cupom_code = kwargs.get("cupom")
         cupom_instance = get_object_or_404(Cupom, codigo=cupom_code)
         consumos = Consumo.objects.filter(cupom=cupom_instance)
         serializer = ConsumoSerializer(consumos, many=True)
-
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
+        """Criar um novo consumo, aplicar desconto com base no cupom."""
         cupom_codigo = request.data.get("cupom", "").strip().upper()
         valor_compra = Decimal(request.data.get("valor_compra", 0))
         cliente_id = request.data.get("cliente_id")
@@ -78,7 +65,7 @@ class ConsumoViewSet(viewsets.ModelViewSet):
             return Response({"erro": "Valor da compra é inferior ao necessário para utilizar o cupom."}, status=status.HTTP_400_BAD_REQUEST)
 
         # 5. Verificar se é a primeira compra do cliente com aquele cupom
-        if cupom.primeira_compra and Consumo.objects.filter(cliente_id=cliente_id, cupom=cupom).exists():
+        if cupom.primeira_compra and Consumo.objects.filter(cliente=cliente_id, cupom=cupom).exists():
             return Response({"erro": "Cupom válido apenas para a primeira compra."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Aplicar o desconto usando o método do modelo Cupom
@@ -92,7 +79,7 @@ class ConsumoViewSet(viewsets.ModelViewSet):
         except Cliente.DoesNotExist:
             return Response({"erro": "Cliente não encontrado."}, status=status.HTTP_400_BAD_REQUEST)
         # Salvando o consumo
-        consumo = Consumo(cupom=cupom, cliente_id=cliente, valor_compra=valor_compra, desconto_aplicado=desconto)
+        consumo = Consumo(cupom=cupom, cliente_id=cliente.id, valor_compra=valor_compra, desconto_aplicado=desconto)
         consumo.save()
 
         # Retornando a resposta
