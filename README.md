@@ -23,8 +23,10 @@ cd spotlar_test
 
 ## Ambiente Virtual
 Recomendamos criar um ambiente virtual para executar este projeto:
+Obs.: Esse projeto foi desenvolvido com Python 3.9.0.
+
 ```
-python3 -m venv venv
+python3.9 -m venv venv
 source venv/bin/activate
 ```
 
