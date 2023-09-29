@@ -49,5 +49,5 @@ Agora, você pode acessar o servidor localmente em http://localhost:8000/.
 ### Testes
 Para executar os testes
 ```
-python manage.py test cupons.tests.test_api
+pytest
 ```
