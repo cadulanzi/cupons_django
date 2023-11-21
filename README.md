@@ -20,8 +20,8 @@ Você pode testar a api tanto pela Collection do Postman que está na pasta "pos
 1. **Clone o Repositório**
 
 ```bash
-git clone https://github.com/cadulanzi/spotlar_cupons_django.git
-cd spotlar_test
+git clone https://github.com/cadulanzi/cupons_django.git
+cd cupons_django
 ```
 
 ## Ambiente Virtual
