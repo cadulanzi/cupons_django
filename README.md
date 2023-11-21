@@ -1,8 +1,8 @@
-# Spotlar Test: Sistema de Cupons
+# Sistema de Cupons
 
 ## Descrição
 
-Este projeto foi desenvolvido como parte do processo seletivo para a Spotlar. Ele implementa um sistema de cupons onde clientes podem usar cupons para obter descontos em suas compras.
+O projet consiste num sistema de cupons onde clientes podem usar cupons para obter descontos em suas compras.
 
 ## Características
 
